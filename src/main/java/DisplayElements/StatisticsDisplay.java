@@ -3,6 +3,9 @@ package DisplayElements;
 import Subject.Subject;
 import Observer.Observer;
 
+import javax.swing.*;
+import java.awt.*;
+
 public class StatisticsDisplay implements Observer, DisplayElement{
     private float temperature;
     private float humidity;
@@ -17,12 +20,27 @@ public class StatisticsDisplay implements Observer, DisplayElement{
 
     private Subject weatherData;
 
+    private final JPanel panel;
+    private final JLabel lbl_Min;
+    private final JLabel lbl_Max;
+    private final JLabel lbl_Average;
     public StatisticsDisplay(Subject weatherData){
         this.weatherData = weatherData;
         weatherData.registerObserver(this);
 
         suma_temp = new float[100];
         lecturas = 0;
+
+        panel = new JPanel(new GridLayout(3, 1));
+        panel.setBorder(BorderFactory.createTitledBorder("Estadísticas"));
+
+        lbl_Min = new JLabel("Temperatura Mínima: ");
+        lbl_Max = new JLabel("Temperatura Máxima: ");
+        lbl_Average = new JLabel("Temperatura Promedio: ");
+
+        panel.add(lbl_Min);
+        panel.add(lbl_Max);
+        panel.add(lbl_Average);
     }
 
     @Override
@@ -53,6 +71,7 @@ public class StatisticsDisplay implements Observer, DisplayElement{
         System.out.printf("Min Temperature: " + minTemp + '\n');
         calcAverageTemperature();
     }
+
 
     public void calcAverageTemperature(){
         if(lecturas < 1){

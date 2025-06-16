@@ -8,9 +8,15 @@ import Observer.*;
 import DisplayElements.*;
 
 import java.awt.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class WeatherORamaView extends JFrame{
 
+
+    private final Map<String,JPanel> activePanels = new HashMap<>();
     private final static int MAIN_FRAME_WIDTH = 1080;
     private final static int MAIN_FRAME_HEIGHT = 600;
     private final static int MAIN_FRAME_X = 100;
@@ -83,8 +89,7 @@ public class WeatherORamaView extends JFrame{
         JPanel VisualizationsPanel = new JPanel(null);
         VisualizationsPanel.setPreferredSize(new Dimension(MAIN_FRAME_WIDTH, 600));
         make_Visualizations(VisualizationsPanel);
-        JScrollPane scrollPane = new JScrollPane(VisualizationsPanel);
-        add(scrollPane, BorderLayout.CENTER);
+        add(VisualizationsPanel, BorderLayout.CENTER);
 
         JPanel AlertSystemPanel = new JPanel(null);
         AlertSystemPanel.setPreferredSize(new Dimension(MAIN_FRAME_WIDTH, 120));
@@ -162,25 +167,39 @@ public class WeatherORamaView extends JFrame{
     }
 
     private void make_Visualizations(JPanel visualizationsPanel) {
-        visualizationsPanel.setLayout(null);
+        visualizationsPanel.setLayout(new BorderLayout());
 
-        lbl_Visualizaciones.setBounds(10,10,200,20);
-        visualizationsPanel.add(lbl_Visualizaciones);
+        lbl_Visualizaciones.setBorder(new EmptyBorder(10, 10, 10, 10));
+        visualizationsPanel.add(lbl_Visualizaciones, BorderLayout.NORTH);
 
-        dynamicVisualizationsPanel.setLayout(null);
-        dynamicVisualizationsPanel.setBounds(10,40,740,1000);
-        visualizationsPanel.add(dynamicVisualizationsPanel);
+        dynamicVisualizationsPanel.setLayout(new BoxLayout(dynamicVisualizationsPanel, BoxLayout.Y_AXIS));
+        JScrollPane dynamicScroll = new JScrollPane(dynamicVisualizationsPanel);
+        dynamicScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        visualizationsPanel.add(dynamicScroll, BorderLayout.CENTER);
     }
 
-    public void addPanelToVisualizations(JPanel panel) {
-        panel.setBounds(10, panelYOffset, 700, panel.getPreferredSize().height + 30);
-        dynamicVisualizationsPanel.add(panel);
-        panelYOffset += panel.getHeight() + 10;
 
-        dynamicVisualizationsPanel.setPreferredSize(new Dimension(700, panelYOffset + 50 ));
+
+
+    public void addPanelToVisualizations(JPanel panel) {
+        String panelKey = panel.getBorder().toString();
+        if (!activePanels.containsKey(panelKey)) {
+            activePanels.put(panelKey, panel);
+            dynamicVisualizationsPanel.add(Box.createVerticalStrut(10));
+            dynamicVisualizationsPanel.add(panel);
+        } else {
+            dynamicVisualizationsPanel.remove(activePanels.get(panelKey));
+            activePanels.put(panelKey, panel);
+            dynamicVisualizationsPanel.add(panel);
+        }
+
         dynamicVisualizationsPanel.revalidate();
         dynamicVisualizationsPanel.repaint();
     }
+
+
+
+
 
     public void setAlertText(String texto){
         lbl_ResultadoSistemaAlertas.setText(texto);

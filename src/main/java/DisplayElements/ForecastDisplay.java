@@ -1,6 +1,10 @@
 package DisplayElements;
 import Observer.Observer;
 import Subject.*;
+
+import javax.swing.*;
+import java.awt.*;
+
 public class ForecastDisplay implements Observer, DisplayElement{
     private float temperature;
     private float humidity;
@@ -9,9 +13,16 @@ public class ForecastDisplay implements Observer, DisplayElement{
     private float lastPressure;
     private final Subject weatherData;
 
+    private final JPanel panel;
+    private final JLabel lbl_Forecast;
+
     public ForecastDisplay(Subject weatherData){
         this.weatherData = weatherData;
         weatherData.registerObserver(this);
+        panel = new JPanel(new GridLayout(1,1));
+        panel.setBorder(BorderFactory.createTitledBorder("Forecast"));
+        lbl_Forecast = new JLabel("Pronostico: " + giveForeCast());
+        panel.add(lbl_Forecast);
     }
 
     @Override
